@@ -1,0 +1,8 @@
+okta:
+  client:
+    connectionTimeout: 3 # seconds
+    orgUrl: "https://dev-436597.okta.com"
+    token: 00TObzVp8D1j8Y45sE-uEs2FgOy7AvG17zHeTvJVP9
+    requestTimeout: 0 # seconds
+    rateLimit:
+      maxRetries: 4
