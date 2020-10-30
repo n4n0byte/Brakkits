@@ -57,6 +57,15 @@ public class EventRestController {
 }
 
     /**
+     * attempts to delete an event
+     */
+    @GetMapping("/deleteEvent/{eventName}")
+    public DTO<Boolean> deleteEvent(JwtAuthenticationToken token, @PathVariable("eventName") String eventName){
+        User usr = RetrieveJWTValues.makeUser(token);
+        return new DTO<>(eventService.deleteEvent(usr, eventName));
+    }
+
+    /**
      * @param token JwtToken
      * @param maxAmount amount
      * @return
@@ -99,12 +108,28 @@ public class EventRestController {
         return null;
     }
 
+    /**
+     *
+     * @param token JWT Token
+     * @param name String
+     * @return dtp string list
+     */
     @GetMapping("/getStageList")
     public DTO<List<String>> stageList(JwtAuthenticationToken token, @RequestParam(name = "eventName") String name) {
         Tournament t = tournamentRepository.findTournamentByTitle(name).orElse(null);
         return new DTO<>(t.getStageList());
     }
 
+    /**
+     * Updates an event
+     * @param token Token
+     * @param image Image
+     * @param title String
+     * @param oldTitle String
+     * @param description String
+     * @param gameTitle String
+     * @return bool dto
+     */
     @PostMapping(value = "/updateEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DTO<Boolean> update(JwtAuthenticationToken token, @RequestParam MultipartFile image,
                                    @RequestParam String title, @RequestParam String oldTitle, @RequestParam String description,

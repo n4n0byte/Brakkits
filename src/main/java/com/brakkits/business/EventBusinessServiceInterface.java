@@ -19,6 +19,24 @@ import java.util.List;
  **/
 public interface EventBusinessServiceInterface {
 
+    /**
+     * Delete
+     * @param user User
+     * @param title String
+     * @return String
+     */
+    boolean deleteEvent(User user, String title);
+
+    /**
+     * Updates an event
+     * @param user User
+     * @param image File
+     * @param oldTitle String
+     * @param title String
+     * @param description String
+     * @param gameTitle String
+     * @return boolean
+     */
     boolean updateEvent(User user, MultipartFile image, String oldTitle, String title, String description, String gameTitle);
 
     /**

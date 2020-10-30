@@ -8,6 +8,8 @@ import com.brakkits.models.User;
 
 import com.brakkits.models.UserTournamentPrivilege;
 import com.brakkits.util.DataNotFoundException;
+import com.brakkits.util.GenericException;
+import com.brakkits.util.InvalidDataException;
 import com.brakkits.util.RetrieveJWTValues;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -62,12 +64,35 @@ public class EventBusinessService implements EventBusinessServiceInterface {
                 return Arrays.asList("Dreamland","Halberd","Fountain of Dreams");
         }
 
+    }
 
+
+    /**
+     * Deletes am event
+     * @param user User
+     * @param title String
+     * @return boolean
+     */
+    @Override
+    public boolean deleteEvent (User user, String title){
+
+        // throw is no tourney is found
+        Tournament t = tournamentRepository.findTournamentByTitle(title)
+                .orElseThrow(DataNotFoundException::new);
+
+        // throw if the tournament owner is not the same as the user submitting
+        if (!t.getOwner().getTag().equals(user.getTag())) throw new SecurityException("Invalid User");
+
+        try {
+            return tournamentRepository.deleteByTitle(title);
+        } catch (RuntimeException e){
+            throw new GenericException(e);
+        }
     }
 
     /**
      * Updates an event, throws in failure case
-     * @param user User
+     * @param user user
      * @param image File
      * @param title String
      * @param description String
@@ -76,14 +101,46 @@ public class EventBusinessService implements EventBusinessServiceInterface {
     @Override
     public boolean updateEvent(User user, MultipartFile image, String oldTitle, String title, String description, String gameTitle){
 
-        Optional<Tournament> t = tournamentRepository.findTournamentByTitle(oldTitle);
+        // throw is no tourney is found
+        Tournament t = tournamentRepository.findTournamentByTitle(oldTitle)
+                .orElseThrow(DataNotFoundException::new);
 
-        if (t.isEmpty()){
-            throw new DataNotFoundException();
+        // throw if the tournament owner is not the same as the user submitting
+        if (!t.getOwner().getTag().equals(user.getTag())) throw new SecurityException("Invalid User");
+
+        // setup file io for image
+        String modifiedImgName = null;
+        Path path = null;
+
+        if (image != null){
+            // encode image as base64
+            byte[] encodedUrl = Base64.encodeBase64(new String(new Date() + user.getTag() + image.getOriginalFilename()).getBytes());
+            modifiedImgName = new String(encodedUrl) + ".jpg";
+
+            File f = new File(imgLocation + modifiedImgName);
+
+            path = Paths.get(imgLocation + modifiedImgName);
+            // save image
+            try {
+                f.createNewFile();
+                FileOutputStream fout = new FileOutputStream(f);
+                fout.write(image.getBytes());
+                fout.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
+        // update tournament
+        t.setTitle(title);
+        t.setDescription(description);
+        t.setGameTitle(gameTitle);
 
-        return false;
+        //TODO update this for deployment
+        t.setImgUrl("http://localhost:8080/images/" + modifiedImgName);
+
+        tournamentRepository.save(t);
+        return true;
     }
 
     /**

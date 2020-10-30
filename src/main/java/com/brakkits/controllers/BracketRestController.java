@@ -31,36 +31,6 @@ public class BracketRestController {
     @Autowired
     private TournamentRepository tournamentRepository;
 
-    /**
-     * Attempts to delete an event
-     * @param token JwtToken
-     * @param eventName String
-     * @return DTO<Boolean> bool
-     */
-    @DeleteMapping("/deleteEvent/{eventName}")
-    public DTO<Boolean> deleteEvent(JwtAuthenticationToken token, @PathVariable("eventName") String eventName) {
-        DTO<Boolean> res = new DTO<>();
-        User user = RetrieveJWTValues.makeUser(token);
-        Optional<Tournament> tournament = tournamentRepository.findTournamentByTitle(eventName);
-
-        // check for presence of tourney and if tournament owner email matches
-        if (!tournament.isPresent()) {
-            res.setMessage("not found");
-            res.setStatusCode(404);
-            res.setData(false);
-        } else if(tournament.get().getOwner().getEmail().equals(user.getEmail())) {
-            res.setData(true);
-            tournamentRepository.delete(tournament.get());
-        } else {
-            res.setMessage("invalid credentials");
-            res.setStatusCode(401);
-            res.setData(false);
-        }
-
-        return res;
-    }
-
-
 
 
     /**

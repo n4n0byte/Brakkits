@@ -45,5 +45,11 @@ public interface TournamentRepository extends CrudRepository<Tournament, Long> {
      */
     List<Tournament> findAll(Pageable max);
 
+    /**
+     * deletes a tournament by its title
+     * @param title String
+     * @return bool
+     */
+    Boolean deleteByTitle(String title);
 
 }
