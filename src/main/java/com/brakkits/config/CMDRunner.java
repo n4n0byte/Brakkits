@@ -7,6 +7,10 @@ import com.brakkits.data.UserRepository;
 import com.brakkits.models.Attendee;
 import com.brakkits.models.Tournament;
 import com.brakkits.models.User;
+import com.okta.sdk.authc.credentials.TokenClientCredentials;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
+import com.okta.sdk.resource.user.UserList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -100,6 +104,8 @@ public class CMDRunner implements CommandLineRunner {
         tournamentRepository.save(tournament);
         eventBusinessServiceInterface.createEvent(user, null, "Service","description", new Date(), 32, "Melee");
     }
+
+
 
     @Override
     public void run(String... args) throws Exception {

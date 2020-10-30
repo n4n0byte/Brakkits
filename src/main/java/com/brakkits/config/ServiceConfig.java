@@ -2,6 +2,8 @@ package com.brakkits.config;
 
 import com.brakkits.business.EventBusinessService;
 import com.brakkits.business.EventBusinessServiceInterface;
+import com.brakkits.business.UserService;
+import com.brakkits.business.UserServiceInterface;
 import com.brakkits.data.*;
 import com.brakkits.models.Bracket;
 import org.springframework.context.annotation.Bean;
@@ -48,6 +50,12 @@ public class ServiceConfig {
         return new EventBusinessService();
     }
 
+    @Bean
+    @Primary
+    UserServiceInterface userServiceInterface(){
+        System.out.println("injecting user interface");
+        return new UserService();
+    }
 
 
 
