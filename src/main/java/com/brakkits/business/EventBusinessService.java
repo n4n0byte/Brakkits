@@ -84,10 +84,12 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         if (!t.getOwner().getTag().equals(user.getTag())) throw new SecurityException("Invalid User");
 
         try {
-            return tournamentRepository.deleteByTitle(title);
+            tournamentRepository.delete(t);
         } catch (RuntimeException e){
-            throw new GenericException(e);
+            throw new InvalidDataException(e);
         }
+
+        return true;
     }
 
     /**

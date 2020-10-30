@@ -92,4 +92,21 @@ public class GlobalExceptionHandler {
         return backendError;
     }
 
+    /**
+     * handle auth issue
+     * @param ex Exception
+     * @param request WebRequest
+     * @return ResponseEntity<DTO<HttpStatus>>
+     */
+    @ExceptionHandler({InvalidDataException.class} )
+    @ResponseBody
+    public DTO<HttpStatus> handleInvalidData(Exception ex, WebRequest request) {
+
+        backendError.setStatusCode(HttpStatus.UNAUTHORIZED.value());
+        backendError.setData(HttpStatus.UNAUTHORIZED);
+        backendError.setMessage(ex.getMessage());
+
+        return backendError;
+    }
+
 }

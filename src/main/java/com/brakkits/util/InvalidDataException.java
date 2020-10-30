@@ -12,6 +12,10 @@ public class InvalidDataException extends RuntimeException{
     public InvalidDataException() {
     }
 
+    public InvalidDataException(Throwable cause) {
+        super(cause);
+    }
+
     public InvalidDataException(String message, Throwable cause) {
         super(message, cause);
     }

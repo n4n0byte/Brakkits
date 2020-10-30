@@ -4,7 +4,10 @@ import com.brakkits.models.Attendee;
 import com.brakkits.models.Tournament;
 import com.brakkits.models.User;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import javax.persistence.TypedQuery;
 import java.util.List;
@@ -46,10 +49,9 @@ public interface TournamentRepository extends CrudRepository<Tournament, Long> {
     List<Tournament> findAll(Pageable max);
 
     /**
-     * deletes a tournament by its title
-     * @param title String
-     * @return bool
+     * deletes a touranment
+     * @param tournament Tournament
      */
-    Boolean deleteByTitle(String title);
-
+    @Override
+    void delete(Tournament tournament);
 }
