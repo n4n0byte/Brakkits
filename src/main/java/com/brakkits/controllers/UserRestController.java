@@ -3,6 +3,7 @@ package com.brakkits.controllers;
 import com.brakkits.data.DTO;
 import com.brakkits.data.UserRepository;
 import com.brakkits.models.User;
+import com.brakkits.util.GenericException;
 import com.brakkits.util.RetrieveJWTValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.JwtValidators;
@@ -27,6 +28,13 @@ public class UserRestController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @PostMapping
+    public DTO<String> updateUsername(){
+
+
+        return null;
+    }
 
     /**
      * inserts user info into db

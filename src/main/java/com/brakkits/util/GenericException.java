@@ -11,6 +11,8 @@ package com.brakkits.util;
 
 public class GenericException extends RuntimeException {
 
+    public GenericException() {
+    }
 
     public GenericException(Throwable cause) {
         super(cause);

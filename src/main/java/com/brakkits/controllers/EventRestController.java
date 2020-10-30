@@ -65,6 +65,17 @@ public class EventRestController {
         return new DTO<>(eventService.deleteEvent(usr, eventName));
     }
 
+
+
+    /**
+     * Join Event
+     */
+    @PostMapping("/JoinEvent/{eventName}")
+    public DTO<String> joinEvent(JwtAuthenticationToken token, @PathVariable("eventName") String eventName){
+        // TODO
+        return null;
+    }
+
     /**
      * @param token JwtToken
      * @param maxAmount amount
