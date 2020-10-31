@@ -46,4 +46,7 @@ public class Tournament {
     @OneToMany()
     private List<Attendee> attendees;
 
+    @Transient
+    private List<List< List<BracketUser> >> rounds;
+
 }

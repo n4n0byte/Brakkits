@@ -109,4 +109,21 @@ public class GlobalExceptionHandler {
         return backendError;
     }
 
+    /**
+     * handle auth issue
+     * @param ex Exception
+     * @param request WebRequest
+     * @return ResponseEntity<DTO<HttpStatus>>
+     */
+    @ExceptionHandler({DuplicateEntryException.class} )
+    @ResponseBody
+    public DTO<HttpStatus> duplicateData(Exception ex, WebRequest request) {
+
+        backendError.setStatusCode(HttpStatus.CONFLICT.value());
+        backendError.setData(HttpStatus.CONFLICT);
+//        backendError.setMessage(ex.getMessage());
+        backendError.setMessage("Field already taken");
+        return backendError;
+    }
+
 }

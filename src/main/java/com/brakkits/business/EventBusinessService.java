@@ -2,15 +2,10 @@ package com.brakkits.business;
 
 import com.brakkits.data.TournamentRepository;
 import com.brakkits.data.UserRepository;
-import com.brakkits.models.Attendee;
-import com.brakkits.models.Tournament;
-import com.brakkits.models.User;
+import com.brakkits.models.*;
 
-import com.brakkits.models.UserTournamentPrivilege;
-import com.brakkits.util.DataNotFoundException;
-import com.brakkits.util.GenericException;
-import com.brakkits.util.InvalidDataException;
-import com.brakkits.util.RetrieveJWTValues;
+import com.brakkits.util.*;
+import com.google.common.math.IntMath;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,29 +15,33 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.SecurityException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 10/25/2020
  *
  * Business Layer Service Impl. for handling events
  **/
 public class EventBusinessService implements EventBusinessServiceInterface {
 
     @Autowired
-    TournamentRepository tournamentRepository;
+    private TournamentRepository tournamentRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    private Tournament t;
+
+    private static HashMap<String, Tournament> tournamentHashMap = new HashMap<>();
+
 
     private static String imgLocation = "C:\\Users\\coopn\\Desktop\\BrakkitsRoot\\brakkits-backend\\src\\main\\resources\\static\\images\\";
 
@@ -66,6 +65,23 @@ public class EventBusinessService implements EventBusinessServiceInterface {
 
     }
 
+    /**
+     * Finds a tournament
+     * @param title String
+     * @return Tournament
+     */
+    @Override
+    public Tournament findTournament(String title){
+        t = tournamentRepository.findTournamentByTitle(title).orElseThrow(DataNotFoundException::new);
+
+        try {
+            t.setRounds(tournamentHashMap.get(title).getRounds());
+        } catch(Exception e){
+            throw new DataNotFoundException("Tournament wasn't inserted into map");
+        }
+
+        return t;
+    }
 
     /**
      * Deletes am event
@@ -77,8 +93,15 @@ public class EventBusinessService implements EventBusinessServiceInterface {
     public boolean deleteEvent (User user, String title){
 
         // throw is no tourney is found
-        Tournament t = tournamentRepository.findTournamentByTitle(title)
+        t = tournamentRepository.findTournamentByTitle(title)
                 .orElseThrow(DataNotFoundException::new);
+
+        // try to delete tournament bracket or throw
+        try {
+            tournamentHashMap.remove(title);
+        } catch(Exception e){
+            throw new DataNotFoundException("Hashmap delete failed");
+        }
 
         // throw if the tournament owner is not the same as the user submitting
         if (!t.getOwner().getTag().equals(user.getTag())) throw new SecurityException("Invalid User");
@@ -104,7 +127,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
     public boolean updateEvent(User user, MultipartFile image, String oldTitle, String title, String description, String gameTitle){
 
         // throw is no tourney is found
-        Tournament t = tournamentRepository.findTournamentByTitle(oldTitle)
+        t = tournamentRepository.findTournamentByTitle(oldTitle)
                 .orElseThrow(DataNotFoundException::new);
 
         // throw if the tournament owner is not the same as the user submitting
@@ -159,6 +182,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         String modifiedImgName = null;
         Path path = null;
 
+        // attempt to write image
         if (image != null){
             // encode image as base64
             byte[] encodedUrl = Base64.encodeBase64(new String(new Date() + user.getTag() + image.getOriginalFilename()).getBytes());
@@ -181,7 +205,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         User tmp = userRepository.findUserByEmail(user.getEmail()).get();
 
         // build a tourney
-        Tournament t = Tournament.builder()
+        t = Tournament.builder()
                 .owner(tmp)
                 .capacity(capacity)
                 .description(description)
@@ -190,11 +214,68 @@ public class EventBusinessService implements EventBusinessServiceInterface {
                 .title(title)
                 .startDate(selectedStartDate)
                 .points(capacity*2)
-                .isActive(false)
+                .isActive(true)
                 .imgUrl(modifiedImgName == null ? "http://localhost:8080/images/smash.jpg" : "http://localhost:8080/images/" + modifiedImgName)
             .build();
 
         tournamentRepository.save(t);
+
+        List<List< List<User> >> rounds = new ArrayList<>();
+
+        //initialize bracket with new round
+        t.setRounds(doInitialBracketSetup(t.getCapacity()));
+
+
+        // store the tournament in hashmap
+        tournamentHashMap.put(title, t);
+
+    }
+
+    private List<List< List<BracketUser> >> doInitialBracketSetup(int capacity){
+        List<List< List<BracketUser> >> rounds = new ArrayList<>();
+
+        int maxRoundCapacity = IntMath.floorPowerOfTwo(capacity);
+
+        // create max capacity at each round corresponding a power of 2
+        while (maxRoundCapacity >= 1){
+
+            List< List<BracketUser> > currentRound = new ArrayList<>();
+
+
+            for (int currentRoundIndex = 0; currentRoundIndex < maxRoundCapacity; currentRoundIndex++){
+                 // add a pair of users for each match in round
+                    currentRound.add(List.of(new BracketUser(), new BracketUser()));
+            }
+            rounds.add(currentRound);
+            maxRoundCapacity = maxRoundCapacity / 2;
+        }
+
+        return rounds;
+    }
+
+    public void addEntrant(User entrant, String eventName){
+
+        try{
+            t = tournamentHashMap.get(eventName);
+        } catch (Exception e) {
+            throw  new DataNotFoundException("Tournament name not found");
+        }
+
+        List<List<List<BracketUser>>> rounds = t.getRounds();
+
+        try{
+         rounds.forEach(round -> {
+            round.forEach(pair -> {
+                pair.stream().peek(usr -> {
+                    if (usr.getUser() == null){
+                        usr.copy(entrant);
+                        throw new LoopBreakException();
+                    }
+                });
+            });
+        });} catch (LoopBreakException e){
+            System.out.println("Broke out of user bracket loop");
+        }
 
     }
 

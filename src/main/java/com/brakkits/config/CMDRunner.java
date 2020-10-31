@@ -7,6 +7,7 @@ import com.brakkits.data.UserRepository;
 import com.brakkits.models.Attendee;
 import com.brakkits.models.Tournament;
 import com.brakkits.models.User;
+import com.google.common.math.IntMath;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
@@ -104,7 +105,6 @@ public class CMDRunner implements CommandLineRunner {
         tournamentRepository.save(tournament);
         eventBusinessServiceInterface.createEvent(user, null, "Service","description", new Date(), 32, "Melee");
     }
-
 
 
     @Override

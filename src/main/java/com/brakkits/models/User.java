@@ -30,6 +30,21 @@ import java.util.Set;
 @Entity
 public class User {
 
+
+    public void copy(User other) {
+        this.id = other.id;
+        this.tag = other.tag;
+        this.email = other.email;
+        this.displayName = other.displayName;
+        this.status = other.status;
+        this.wonRound = other.wonRound;
+        this.placement = other.placement;
+        this.winCount = other.winCount;
+        this.lossCount = other.lossCount;
+        this.eventsAttended = other.eventsAttended;
+        this.winLossRatio = other.winLossRatio;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

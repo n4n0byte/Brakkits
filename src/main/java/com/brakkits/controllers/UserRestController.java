@@ -7,17 +7,18 @@ import com.brakkits.data.UserRepository;
 import com.brakkits.models.User;
 import com.brakkits.util.GenericException;
 import com.brakkits.util.RetrieveJWTValues;
+import com.google.common.math.IntMath;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,18 +33,47 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserRestController {
 
-    private Client client = Clients.builder()
-            .setOrgUrl("https://dev-436597.okta.com")
-            .setClientCredentials(new TokenClientCredentials("00ICLr2QCg5anviwIw8GkUNmZiq9PwyorgZUvkEPk-"))
-            .build();
-
-
     @Autowired
     UserServiceInterface userService;
 
-    @PostMapping("/updateUsername/{username}")
-    public DTO<String> updateUsername(JwtAuthenticationToken token, @PathVariable String username) {
+
+    private List<List<List<User>>> doInitialBracketSetup(int capacity){
+        List<List< List<User> >> rounds = new ArrayList<>();
+
+        int maxRoundCapacity = IntMath.floorPowerOfTwo(capacity);
+
+        // create max capacity at each round corresponding a power of 2
+        while (maxRoundCapacity != 1){
+
+            List< List<User> > currentRound = new ArrayList<>();
+
+
+            for (int currentRoundIndex = 0; currentRoundIndex < maxRoundCapacity; currentRoundIndex++){
+
+                for (int roundCapacity = 0; roundCapacity < maxRoundCapacity; roundCapacity += 2)
+
+                    // add a pair of users for each match in round
+                    currentRound.add(List.of(new User(), new User()));
+
+            }
+            rounds.add(currentRound);
+            maxRoundCapacity /= 2;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Updates a username
+     * @param token Token
+     * @param username Username
+     * @return result dto
+     */
+    @PostMapping(value = "/updateUsername", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public DTO<String> updateUsername(JwtAuthenticationToken token, @RequestParam String username) {
         userService.updateUsername(RetrieveJWTValues.makeUser(token), username);
+        doInitialBracketSetup(9);
         return new DTO<>("success");
     }
 

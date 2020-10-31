@@ -19,6 +19,8 @@ import java.util.List;
  **/
 public interface EventBusinessServiceInterface {
 
+    Tournament findTournament(String title);
+
     /**
      * Delete
      * @param user User

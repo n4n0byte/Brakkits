@@ -1,11 +1,9 @@
 package com.brakkits.controllers;
 
+import com.brakkits.business.EventBusinessServiceInterface;
 import com.brakkits.data.DTO;
 import com.brakkits.data.TournamentRepository;
-import com.brakkits.models.Attendee;
-import com.brakkits.models.Tournament;
-import com.brakkits.models.User;
-import com.brakkits.models.UserTournamentPrivilege;
+import com.brakkits.models.*;
 import com.brakkits.util.RetrieveJWTValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -31,6 +29,8 @@ public class BracketRestController {
     @Autowired
     private TournamentRepository tournamentRepository;
 
+    @Autowired
+    private EventBusinessServiceInterface eventBusinessServiceInterface;
 
 
     /**
@@ -65,32 +65,13 @@ public class BracketRestController {
      * @return List<List< List<BracketUser> >>
      */
     @GetMapping("/getEventBracket/{eventName}")
-    public DTO< List<List< List<User> >> > getBracket(@PathVariable("eventName") String eventName){
+    public DTO< List<List< List<BracketUser> >> > getBracket(@PathVariable("eventName") String eventName){
 
-        DTO< List<List< List<User> >> > bracket = new DTO<>();
+        DTO< List<List< List<BracketUser> >> > bracket = new DTO<>();
 
-        // create pair
-        List<User> pair = new ArrayList<>();
-        pair.add(new User());
-        pair.add(new User());
 
-        // fill round with pairs
-        List< List<User> > round = new ArrayList<>();
-
-        for(int i = 0; i < 4; i++){
-            round.add(pair);
-        }
-
-        // fill bracket with rounds
-        List< List< List<User> >> roundList = new ArrayList<>();
-
-        for (int i = 0; i < 4; i++){
-            roundList.add(round);
-        }
-        bracket.setMessage("success");
-        bracket.setStatusCode(200);
-        bracket.setData(roundList);
-
+        Tournament t = eventBusinessServiceInterface.findTournament(eventName);
+        bracket.setData(t.getRounds());
         return bracket;
     }
 

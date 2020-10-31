@@ -20,6 +20,6 @@ public class Round {
 
     private Integer id;
 
-    List<User> entrants;
+    private List<Pair> users;
 
 }

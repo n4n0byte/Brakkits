@@ -80,7 +80,11 @@
             <artifactId>spring-data-jpa</artifactId>
             <version>2.1.6.RELEASE</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.0-jre</version>
+        </dependency>
         <dependency>
             <groupId>com.okta.sdk</groupId>
             <artifactId>okta-sdk-api</artifactId>
