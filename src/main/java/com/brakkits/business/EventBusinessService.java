@@ -38,7 +38,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
 
     private ObjectMapper obj = new ObjectMapper();
 
-    private static String imgLocation = "C:\\Users\\coopn\\Desktop\\BrakkitsRoot\\brakkits-backend\\src\\main\\resources\\static\\images\\";
+    private static String imgLocation = "resources/static/images/";
 
     @Autowired
     public void setTournamentRepository(TournamentRepository tournamentRepository) {

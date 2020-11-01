@@ -4,14 +4,9 @@ import com.brakkits.business.EventBusinessServiceInterface;
 import com.brakkits.data.DTO;
 import com.brakkits.data.TournamentRepository;
 import com.brakkits.models.*;
-import com.brakkits.util.RetrieveJWTValues;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 /**
