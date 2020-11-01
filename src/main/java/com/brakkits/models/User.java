@@ -45,6 +45,10 @@ public class User {
         this.winLossRatio = other.winLossRatio;
     }
 
+    public User(BracketUser bracketUser) {
+        this.tag = bracketUser.getUser();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -62,8 +62,18 @@ public class UserService implements UserServiceInterface {
     }
 
     /**
+     * returns user by email
+     * @param email String
+     * @return User
+     */
+    @Override
+    public User findUserWithEmail(String email){
+        return userRepository.findUserByEmail(email).orElseThrow(DataNotFoundException::new);
+    }
+
+    /**
      * Stores user info
-     * @param token
+     * @param token JwtToken
      */
     @Override
     public void storeUser(JwtAuthenticationToken token){

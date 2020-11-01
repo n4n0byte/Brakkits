@@ -37,33 +37,6 @@ public class UserRestController {
     UserServiceInterface userService;
 
 
-    private List<List<List<User>>> doInitialBracketSetup(int capacity){
-        List<List< List<User> >> rounds = new ArrayList<>();
-
-        int maxRoundCapacity = IntMath.floorPowerOfTwo(capacity);
-
-        // create max capacity at each round corresponding a power of 2
-        while (maxRoundCapacity != 1){
-
-            List< List<User> > currentRound = new ArrayList<>();
-
-
-            for (int currentRoundIndex = 0; currentRoundIndex < maxRoundCapacity; currentRoundIndex++){
-
-                for (int roundCapacity = 0; roundCapacity < maxRoundCapacity; roundCapacity += 2)
-
-                    // add a pair of users for each match in round
-                    currentRound.add(List.of(new User(), new User()));
-
-            }
-            rounds.add(currentRound);
-            maxRoundCapacity /= 2;
-        }
-
-        return null;
-    }
-
-
     /**
      * Updates a username
      * @param token Token
@@ -73,7 +46,6 @@ public class UserRestController {
     @PostMapping(value = "/updateUsername", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DTO<String> updateUsername(JwtAuthenticationToken token, @RequestParam String username) {
         userService.updateUsername(RetrieveJWTValues.makeUser(token), username);
-        doInitialBracketSetup(9);
         return new DTO<>("success");
     }
 
@@ -88,5 +60,13 @@ public class UserRestController {
         userService.storeUser(token);
         return new DTO<>("success");
     }
+
+    @GetMapping("/getUsername")
+    public DTO<String> getUsername(JwtAuthenticationToken token){
+        User usr = RetrieveJWTValues.makeUser(token);
+
+        return new DTO<>(userService.findUserWithEmail(usr.getEmail()).getTag());
+    }
+
 }
 

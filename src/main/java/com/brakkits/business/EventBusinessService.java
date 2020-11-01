@@ -1,12 +1,11 @@
 package com.brakkits.business;
-
 import com.brakkits.data.TournamentRepository;
 import com.brakkits.data.UserRepository;
 import com.brakkits.models.*;
-
 import com.brakkits.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.math.IntMath;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -14,13 +13,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.SecurityException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Ali Cooper
@@ -32,18 +28,27 @@ import java.util.stream.Collectors;
  **/
 public class EventBusinessService implements EventBusinessServiceInterface {
 
-    @Autowired
     private TournamentRepository tournamentRepository;
 
-    @Autowired
     private UserRepository userRepository;
 
     private Tournament t;
 
     private static HashMap<String, Tournament> tournamentHashMap = new HashMap<>();
 
+    private ObjectMapper obj = new ObjectMapper();
 
     private static String imgLocation = "C:\\Users\\coopn\\Desktop\\BrakkitsRoot\\brakkits-backend\\src\\main\\resources\\static\\images\\";
+
+    @Autowired
+    public void setTournamentRepository(TournamentRepository tournamentRepository) {
+        this.tournamentRepository = tournamentRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     /**
      * switch on the selected games to get stagelists
@@ -54,16 +59,23 @@ public class EventBusinessService implements EventBusinessServiceInterface {
 
         switch (gameName){
             case "Melee":
-                return Arrays.asList("Dreamland","Final Destination","Fountain of Dreams");
+                return Arrays.asList("Battlefield", "Dreamland","Final Destination",
+                        "Fountain of Dreams", "Pokemon Stadium", "Yoshi's Story");
             case "Smash 4":
-                return Arrays.asList("Dreamland","Final Destination","Fountain of Dreams", "Yoshi's Story");
+                return Arrays.asList("Battlefield", "Dreamland",
+                        "Final Destination","Lylat Cruise","Smashville",
+                        "Town and City", "Yoshi's Story");
             case "Smash Ultimate":
-                return Arrays.asList("Dreamland","Final Destination","Fountain of Dreams", "Battlefield");
+                return Arrays.asList("Battlefield","Battlefield", "Final Destination", "Yoshi's Story",
+                        "Pokemon Stadium 2", "Smashville", "Fountain of Dreams", "Battlefield",
+                        "Kalos Pokemon League", "Town and City");
             default:
                 return Arrays.asList("Dreamland","Halberd","Fountain of Dreams");
         }
 
     }
+
+
 
     /**
      * Finds a tournament
@@ -179,6 +191,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
      */
     @Override
     public void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle) {
+
         String modifiedImgName = null;
         Path path = null;
 
@@ -214,37 +227,52 @@ public class EventBusinessService implements EventBusinessServiceInterface {
                 .title(title)
                 .startDate(selectedStartDate)
                 .points(capacity*2)
-                .isActive(true)
+                .isActive(false)
                 .imgUrl(modifiedImgName == null ? "http://localhost:8080/images/smash.jpg" : "http://localhost:8080/images/" + modifiedImgName)
             .build();
 
-        tournamentRepository.save(t);
+
 
         List<List< List<User> >> rounds = new ArrayList<>();
 
         //initialize bracket with new round
         t.setRounds(doInitialBracketSetup(t.getCapacity()));
 
-
         // store the tournament in hashmap
         tournamentHashMap.put(title, t);
 
+
+        String serializedBracket = null;
+
+        // serialize the bracket
+        try {
+           serializedBracket = obj.writeValueAsString(tournamentHashMap);
+           t.setBracket(serializedBracket);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new DataNotFoundException();
+        }
+
+        tournamentRepository.save(t);
     }
 
-    private List<List< List<BracketUser> >> doInitialBracketSetup(int capacity){
-        List<List< List<BracketUser> >> rounds = new ArrayList<>();
+    private ArrayList<ArrayList< ArrayList<BracketUser> >> doInitialBracketSetup(int capacity){
+        ArrayList<ArrayList< ArrayList<BracketUser> >> rounds = new ArrayList<>();
 
         int maxRoundCapacity = IntMath.floorPowerOfTwo(capacity);
 
         // create max capacity at each round corresponding a power of 2
         while (maxRoundCapacity >= 1){
 
-            List< List<BracketUser> > currentRound = new ArrayList<>();
+            ArrayList< ArrayList<BracketUser> > currentRound = new ArrayList<>();
 
 
             for (int currentRoundIndex = 0; currentRoundIndex < maxRoundCapacity; currentRoundIndex++){
                  // add a pair of users for each match in round
-                    currentRound.add(List.of(new BracketUser(), new BracketUser()));
+                ArrayList<BracketUser> pair = new ArrayList<>();
+                pair.add(new BracketUser());
+                pair.add(new BracketUser());
+                currentRound.add(pair);
             }
             rounds.add(currentRound);
             maxRoundCapacity = maxRoundCapacity / 2;
@@ -253,7 +281,12 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         return rounds;
     }
 
+    @Override
     public void addEntrant(User entrant, String eventName){
+
+        BracketUser bUser = new BracketUser();
+        bUser.copy(entrant);
+
 
         try{
             t = tournamentHashMap.get(eventName);
@@ -261,19 +294,26 @@ public class EventBusinessService implements EventBusinessServiceInterface {
             throw  new DataNotFoundException("Tournament name not found");
         }
 
-        List<List<List<BracketUser>>> rounds = t.getRounds();
+        ArrayList<ArrayList<ArrayList<BracketUser>>> rounds = t.getRounds();
+
+        List<User> tmp = t.getAttendees();
+        tmp.add(new User(bUser));
+        t.setAttendees(tmp);
 
         try{
-         rounds.forEach(round -> {
-            round.forEach(pair -> {
-                pair.stream().peek(usr -> {
-                    if (usr.getUser() == null){
-                        usr.copy(entrant);
-                        throw new LoopBreakException();
+            for (int round = 0; round < rounds.size(); round++){
+                for (int pair = 0; pair < rounds.get(round).size(); pair++){
+                    for (int userIndex = 0; userIndex < 2; userIndex++){
+                        BracketUser user = rounds.get(round).get(pair).get(userIndex);
+                        if(user.getUser() == null){
+                            user = bUser;
+                            rounds.get(round).get(pair).set(userIndex, user);
+                            throw new LoopBreakException();
+                        }
                     }
-                });
-            });
-        });} catch (LoopBreakException e){
+                }
+            }
+        } catch (Exception e){
             System.out.println("Broke out of user bracket loop");
         }
 
@@ -317,7 +357,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
             userTournamentPrivilege.setOwner(requester.getEmail().equals(owner.getEmail()));
 
             // filter attendees for proper one
-            Optional<Attendee> attender = tournament.get().getAttendees().stream()
+            Optional<User> attender = tournament.get().getAttendees().stream()
                     .filter((attendee)->{return attendee.getEmail().equals(requester.getEmail());})
                     .findFirst();
 

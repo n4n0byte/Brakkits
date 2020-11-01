@@ -5,6 +5,7 @@ import com.brakkits.data.DTO;
 import com.brakkits.data.TournamentRepository;
 import com.brakkits.models.*;
 import com.brakkits.util.RetrieveJWTValues;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -65,13 +66,11 @@ public class BracketRestController {
      * @return List<List< List<BracketUser> >>
      */
     @GetMapping("/getEventBracket/{eventName}")
-    public DTO< List<List< List<BracketUser> >> > getBracket(@PathVariable("eventName") String eventName){
+    public DTO< Tournament > getBracket(@PathVariable("eventName") String eventName){
 
-        DTO< List<List< List<BracketUser> >> > bracket = new DTO<>();
-
-
+        DTO< Tournament > bracket = new DTO<>();
         Tournament t = eventBusinessServiceInterface.findTournament(eventName);
-        bracket.setData(t.getRounds());
+        bracket.setData(t);
         return bracket;
     }
 

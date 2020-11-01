@@ -97,7 +97,6 @@ public class CMDRunner implements CommandLineRunner {
                     .description("Smash Ultimate Tourney")
                     .imgUrl("http://localhost:8080/images/smash.jpg")
                     .points(10)
-                    .attendees(attendeesRepository.findAll())
                     .isActive(true)
                 .stageList(Arrays.asList("Dreamland","Halberd","Fountain of Dreams"))
                 .capacity(64)

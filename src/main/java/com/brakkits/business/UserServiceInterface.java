@@ -19,6 +19,8 @@ public interface UserServiceInterface
      */
     void updateUsername(User user, String newUsername);
 
+    User findUserWithEmail(String email);
+
     /**
      * Stores user info
      * @param token

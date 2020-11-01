@@ -70,10 +70,10 @@ public class EventRestController {
     /**
      * Join Event
      */
-    @PostMapping("/JoinEvent/{eventName}")
-    public DTO<String> joinEvent(JwtAuthenticationToken token, @PathVariable("eventName") String eventName){
-        // TODO
-        return null;
+    @GetMapping("/joinEvent/{eventName}")
+    public DTO<Tournament> addEntrant(JwtAuthenticationToken token, @PathVariable("eventName") String eventName){
+        eventService.addEntrant(RetrieveJWTValues.makeUser(token), eventName);
+        return new DTO<>(eventService.findTournament(eventName));
     }
 
     /**
@@ -95,7 +95,7 @@ public class EventRestController {
      */
     @GetMapping("/findEventByName")
     public DTO<Tournament> findEventListing(JwtAuthenticationToken token, @RequestParam(name = "eventName") String name) {
-        return new DTO<Tournament>(tournamentRepository.findTournamentByTitle(name).orElse(null));
+        return new DTO<Tournament>(eventService.findTournament(name));
     }
 
     /**
@@ -108,16 +108,6 @@ public class EventRestController {
         return new DTO<List<Tournament>>(eventService.searchTournaments(name));
     }
 
-    /**
-     *
-     * @param token Jwt
-     * @param name Str
-     * @return dto
-     */
-    @GetMapping("/eventDetails")
-    public DTO<String> eventDetails(JwtAuthenticationToken token, @RequestParam(name = "eventName") String name){
-        return null;
-    }
 
     /**
      *

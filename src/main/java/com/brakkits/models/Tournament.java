@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,9 +45,13 @@ public class Tournament {
     private List<String> stageList;
 
     @OneToMany()
-    private List<Attendee> attendees;
+    private List<User> attendees;
 
     @Transient
-    private List<List< List<BracketUser> >> rounds;
+    private ArrayList<ArrayList< ArrayList<BracketUser> >> rounds = new ArrayList<>();
+
+    @JsonIgnore
+    @Column(columnDefinition="LONGTEXT")
+    private String bracket;
 
 }

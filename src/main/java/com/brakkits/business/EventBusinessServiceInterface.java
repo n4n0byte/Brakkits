@@ -53,6 +53,8 @@ public interface EventBusinessServiceInterface {
      */
     void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle);
 
+    void addEntrant(User entrant, String eventName);
+
     /**
      * finds all Tournaments, returns an iterable of them
      * @return Iterable<Tournament>
