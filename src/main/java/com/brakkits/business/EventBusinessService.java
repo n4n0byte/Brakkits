@@ -46,6 +46,10 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         this.tournamentRepository = tournamentRepository;
     }
 
+    /**
+     * Setter for user repository
+     * @param userRepository UserRepository
+     */
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
