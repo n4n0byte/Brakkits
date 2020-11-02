@@ -44,6 +44,10 @@ public class Tournament {
     @ElementCollection
     private List<String> stageList;
 
+    @ElementCollection
+    private List<String> characterList;
+
+
     @OneToMany()
     private List<User> attendees;
 

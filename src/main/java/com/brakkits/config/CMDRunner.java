@@ -5,6 +5,7 @@ import com.brakkits.data.AttendeesRepository;
 import com.brakkits.data.TournamentRepository;
 import com.brakkits.data.UserRepository;
 import com.brakkits.models.Attendee;
+import com.brakkits.models.BracketUser;
 import com.brakkits.models.Tournament;
 import com.brakkits.models.User;
 import com.google.common.math.IntMath;
@@ -97,12 +98,31 @@ public class CMDRunner implements CommandLineRunner {
                     .description("Smash Ultimate Tourney")
                     .imgUrl("http://localhost:8080/images/smash.jpg")
                     .points(10)
-                    .isActive(true)
+                    .isActive(false)
                 .stageList(Arrays.asList("Dreamland","Halberd","Fountain of Dreams"))
                 .capacity(64)
                 .build();
         tournamentRepository.save(tournament);
-        eventBusinessServiceInterface.createEvent(user, null, "Service","description", new Date(), 32, "Melee");
+
+        Tournament t2 = Tournament
+                .builder()
+                .startDate(new Date())
+                .owner(user)
+                .title("test")
+                .gameTitle("Melee")
+                .description("Smash Ultimate Tourney")
+                .imgUrl("http://localhost:8080/images/smash.jpg")
+                .points(20)
+                .isActive(true)
+                .stageList(Arrays.asList("Dreamland","Halberd","Fountain of Dreams"))
+                .capacity(5)
+                .build();
+        tournamentRepository.save(t2);
+
+
+        eventBusinessServiceInterface.createEvent(user, null, "Service","description", new Date(), 32, "Melee", true);
+
+        eventBusinessServiceInterface.createEvent(user, null, "Non power of 2 Entrant Number", "Non power of 2 event" , new Date(), 5, "Melee", true);
     }
 
 

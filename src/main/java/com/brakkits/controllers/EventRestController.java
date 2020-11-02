@@ -188,7 +188,7 @@ public class EventRestController {
         User user = RetrieveJWTValues.makeUser(token);
 
         // create event
-        eventService.createEvent(user, image, title, description, selectedStartDate, capacity, gameTitle);
+        eventService.createEvent(user, image, title, description, selectedStartDate, capacity, gameTitle, false);
 
         return new DTO<>("success");
     }

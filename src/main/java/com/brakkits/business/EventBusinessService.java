@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.SecurityException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -38,7 +39,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
 
     private ObjectMapper obj = new ObjectMapper();
 
-    private static String imgLocation = "resources/static/images/";
+    private static String imgLocation = "src/main/resources/static/images/";
 
     @Autowired
     public void setTournamentRepository(TournamentRepository tournamentRepository) {
@@ -70,6 +71,127 @@ public class EventBusinessService implements EventBusinessServiceInterface {
             default:
                 return Arrays.asList("Dreamland","Halberd","Fountain of Dreams");
         }
+
+    }
+
+    /**
+     * switch on game name to get all characters
+     * @return List<String>
+     */
+    private List<String> getCharacters(String name){
+
+
+        switch (name){
+
+            case "Melee":
+                return Arrays.asList("Bowser",
+                        "Captain Falcon",
+                        "Donkey Kong",
+                        "Dr Mario",
+                        "Falco",
+                        "Fox",
+                        "Game & Watch",
+                        "Ganondorf",
+                        "Jigglypuff",
+                        "Kirby",
+                        "Link",
+                        "Luigi",
+                        "Mario",
+                        "Marth",
+                        "Mewtwo",
+                        "Ness",
+                        "Peach",
+                        "Pichu",
+                        "Pikachu",
+                        "Roy",
+                        "Samus",
+                        "Sheik",
+                        "Yoshi",
+                        "Young Link",
+                        "Zelda");
+            case "Smash 4":
+                return Arrays.asList("Cloud", "Ken", "Roy", "Bowser",
+                        "Captain Falcon",
+                        "Donkey Kong",
+                        "Dr Mario",
+                        "Falco",
+                        "Fox",
+                        "Game & Watch",
+                        "Ganondorf",
+                        "Jigglypuff",
+                        "Kirby",
+                        "Link",
+                        "Luigi",
+                        "Mario",
+                        "Marth",
+                        "Mewtwo",
+                        "Ness",
+                        "Peach",
+                        "Pichu",
+                        "Pikachu",
+                        "Roy",
+                        "Samus",
+                        "Sheik",
+                        "Yoshi",
+                        "Young Link",
+                        "Zelda");
+                case "Smash Ultimate":
+                return Arrays.asList(
+                        "Inkling", "Dark Samus", "Isabelle", "Simon", "Richter",
+                        "Cloud", "Ken", "Roy", "Bowser",
+                        "Captain Falcon",
+                        "Donkey Kong",
+                        "Dr Mario",
+                        "Falco",
+                        "Fox",
+                        "Game & Watch",
+                        "Ganondorf",
+                        "Jigglypuff",
+                        "Kirby",
+                        "Link",
+                        "Luigi",
+                        "Mario",
+                        "Marth",
+                        "Mewtwo",
+                        "Ness",
+                        "Peach",
+                        "Pichu",
+                        "Pikachu",
+                        "Roy",
+                        "Samus",
+                        "Sheik",
+                        "Yoshi",
+                        "Young Link",
+                        "Zelda");
+            default:
+                return Arrays.asList("Bowser",
+                    "Captain Falcon",
+                    "Donkey Kong",
+                    "Dr Mario",
+                    "Falco",
+                    "Fox",
+                    "Game & Watch",
+                    "Ganondorf",
+                    "Jigglypuff",
+                    "Kirby",
+                    "Link",
+                    "Luigi",
+                    "Mario",
+                        "Mario",
+                        "Marth",
+                        "Mewtwo",
+                        "Ness",
+                        "Peach",
+                        "Pichu",
+                        "Pikachu",
+                        "Roy",
+                        "Samus",
+                        "Sheik",
+                        "Yoshi",
+                        "Young Link",
+                        "Zelda");
+        }
+
 
     }
 
@@ -188,7 +310,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
      * @param capacity Integer
      */
     @Override
-    public void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle) {
+    public void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle, boolean isActive) {
 
         String modifiedImgName = null;
         Path path = null;
@@ -204,10 +326,11 @@ public class EventBusinessService implements EventBusinessServiceInterface {
             path = Paths.get(imgLocation + modifiedImgName);
             // save image
             try {
-                f.createNewFile();
-                FileOutputStream fout = new FileOutputStream(f);
-                fout.write(image.getBytes());
-                fout.close();
+                Files.write(path, image.getBytes());
+//                f.createNewFile();
+//                FileOutputStream fout = new FileOutputStream(f);
+//                fout.write(image.getBytes());
+//                fout.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -225,7 +348,7 @@ public class EventBusinessService implements EventBusinessServiceInterface {
                 .title(title)
                 .startDate(selectedStartDate)
                 .points(capacity*2)
-                .isActive(false)
+                .isActive(isActive)
                 .imgUrl(modifiedImgName == null ? "http://localhost:8080/images/smash.jpg" : "http://localhost:8080/images/" + modifiedImgName)
             .build();
 
@@ -254,10 +377,16 @@ public class EventBusinessService implements EventBusinessServiceInterface {
         tournamentRepository.save(t);
     }
 
+    /**
+     * Fills in bracket with proper data
+     * @param capacity int
+     * @return list of rounds
+     */
     private ArrayList<ArrayList< ArrayList<BracketUser> >> doInitialBracketSetup(int capacity){
         ArrayList<ArrayList< ArrayList<BracketUser> >> rounds = new ArrayList<>();
 
         int maxRoundCapacity = IntMath.floorPowerOfTwo(capacity);
+        int initialValue = 0;
 
         // create max capacity at each round corresponding a power of 2
         while (maxRoundCapacity >= 1){
@@ -268,24 +397,62 @@ public class EventBusinessService implements EventBusinessServiceInterface {
             for (int currentRoundIndex = 0; currentRoundIndex < maxRoundCapacity; currentRoundIndex++){
                  // add a pair of users for each match in round
                 ArrayList<BracketUser> pair = new ArrayList<>();
-                pair.add(new BracketUser());
-                pair.add(new BracketUser());
+                pair.add(new BracketUser(""));
+                pair.add(new BracketUser(""));
+
                 currentRound.add(pair);
             }
             rounds.add(currentRound);
             maxRoundCapacity = maxRoundCapacity / 2;
         }
 
+
+        if (capacity != IntMath.floorPowerOfTwo(capacity)){
+
+            var ref = new Object() {
+                int currentCapacity = 0;
+            };
+
+
+            // fill out first row
+            rounds.get(0).forEach(pair -> {
+                pair.forEach(bracketUser -> {
+                    bracketUser.setUser("User " + ref.currentCapacity++);
+                });
+            });
+
+            // fill out next row
+            rounds.get(1).forEach(pair -> {
+                if (ref.currentCapacity != 1) {
+                    pair.forEach(bracketUser -> {
+
+                        if (ref.currentCapacity % 2 == 0) {
+                            bracketUser.setUser("User " + ref.currentCapacity++);
+                        } else {
+                            ref.currentCapacity++;
+                        }
+
+                    });
+                }
+            });
+
+        }
+
         return rounds;
     }
 
+    /**
+     * Adds an entrant
+     * @param entrant User
+     * @param eventName Str
+     */
     @Override
     public void addEntrant(User entrant, String eventName){
 
         BracketUser bUser = new BracketUser();
         bUser.copy(entrant);
 
-
+        // extract from hashmap
         try{
             t = tournamentHashMap.get(eventName);
         } catch (Exception e) {

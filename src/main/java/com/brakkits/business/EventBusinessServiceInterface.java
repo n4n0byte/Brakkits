@@ -55,8 +55,9 @@ public interface EventBusinessServiceInterface {
      * @param selectedStartDate Date
      * @param capacity Integer
      * @param gameTitle String
+     * @param isActive bool
      */
-    void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle);
+    void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle, boolean isActive);
 
     /**
      * Adds an entrant

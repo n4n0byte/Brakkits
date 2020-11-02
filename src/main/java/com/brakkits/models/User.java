@@ -25,8 +25,8 @@ import java.util.Set;
 @Setter
 @ToString
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class User {
 
@@ -45,15 +45,22 @@ public class User {
         this.winLossRatio = other.winLossRatio;
     }
 
+
+
     public User(BracketUser bracketUser) {
         this.tag = bracketUser.getUser();
     }
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String tag;
+
+    public User(String tag) {
+        this.tag = tag;
+    }
+
     private String email;
     private String displayName;
     private String status;
