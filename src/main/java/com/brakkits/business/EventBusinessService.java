@@ -63,12 +63,10 @@ public class EventBusinessService implements EventBusinessServiceInterface {
                         "Fountain of Dreams", "Pokemon Stadium", "Yoshi's Story");
             case "Smash 4":
                 return Arrays.asList("Battlefield", "Dreamland",
-                        "Final Destination","Lylat Cruise","Smashville",
-                        "Town and City", "Yoshi's Story");
+                        "Final Destination");
             case "Smash Ultimate":
                 return Arrays.asList("Battlefield","Battlefield", "Final Destination", "Yoshi's Story",
-                        "Pokemon Stadium 2", "Smashville", "Fountain of Dreams", "Battlefield",
-                        "Kalos Pokemon League", "Town and City");
+                        "Pokemon Stadium 2", "Smashville");
             default:
                 return Arrays.asList("Dreamland","Halberd","Fountain of Dreams");
         }

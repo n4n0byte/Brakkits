@@ -19,6 +19,11 @@ import java.util.List;
  **/
 public interface EventBusinessServiceInterface {
 
+    /**
+     * finds tourney
+     * @param title String
+     * @return String
+     */
     Tournament findTournament(String title);
 
     /**
@@ -53,6 +58,11 @@ public interface EventBusinessServiceInterface {
      */
     void createEvent(User user, MultipartFile image, String title, String description, Date selectedStartDate, Integer capacity, String gameTitle);
 
+    /**
+     * Adds an entrant
+     * @param entrant User
+     * @param eventName Str
+     */
     void addEntrant(User entrant, String eventName);
 
     /**

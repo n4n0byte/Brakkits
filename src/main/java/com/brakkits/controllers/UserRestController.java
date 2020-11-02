@@ -30,7 +30,7 @@ import java.util.Optional;
  * This persists the Open ID Connect token recieved from the front-end
  **/
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://salty-inlet-26141.herokuapp.com:443"})
+@CrossOrigin
 public class UserRestController {
 
     @Autowired

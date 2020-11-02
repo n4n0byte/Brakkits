@@ -22,7 +22,7 @@ import java.util.List;
  * Controller for Leaderbord operations
  **/
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://salty-inlet-26141.herokuapp.com:443"})
+@CrossOrigin
 public class LeaderboardRestController {
 
     @Autowired

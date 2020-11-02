@@ -18,7 +18,7 @@ import java.util.Optional;
  * Controller for bracket related control, logic & other operations
  **/
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "https://salty-inlet-26141.herokuapp.com:443"})
+@CrossOrigin
 
 public class BracketRestController {
 
