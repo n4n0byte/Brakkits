@@ -27,12 +27,12 @@ import java.util.Optional;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  *
  * Controller for Event related control, logic & other operations
  **/
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://salty-inlet-26141.herokuapp.com:443"})
 
 public class EventRestController {
 

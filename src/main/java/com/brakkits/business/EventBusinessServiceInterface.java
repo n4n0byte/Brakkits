@@ -14,7 +14,7 @@ import java.util.List;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  * Interface for the event business services
  **/
 public interface EventBusinessServiceInterface {

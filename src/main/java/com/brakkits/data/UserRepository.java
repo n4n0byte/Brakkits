@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Ali Cooper
  * brakkits
- * CST-451
+ * CST-452
  * 3/1/2020
  **/
 public interface UserRepository extends CrudRepository<User, Long> {

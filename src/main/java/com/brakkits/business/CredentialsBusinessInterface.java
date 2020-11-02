@@ -8,7 +8,7 @@ import java.util.Optional;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  * Interface specification for the credentials business service
  **/
 public interface CredentialsBusinessInterface {

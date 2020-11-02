@@ -25,12 +25,12 @@ import java.util.Optional;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  *
  * This persists the Open ID Connect token recieved from the front-end
  **/
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://salty-inlet-26141.herokuapp.com:443"})
 public class UserRestController {
 
     @Autowired

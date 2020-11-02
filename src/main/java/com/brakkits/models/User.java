@@ -15,7 +15,7 @@ import java.util.Set;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  *
  * This is the User Model class, it uses Lombok annotations to
  * generate accessor methods, builders, and toString methods

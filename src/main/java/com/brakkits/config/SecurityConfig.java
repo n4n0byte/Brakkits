@@ -13,7 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  * Oauth + Spring Security Config
  **/
 @Configuration

@@ -12,7 +12,7 @@ import java.util.List;
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  *
  * This is the Attendee Model class, it uses Lombok annotations to
  * generate accessor methods, builders, and toString methods

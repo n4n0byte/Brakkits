@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
  * Ali Cooper
  * brakkits
  * CST-452
- * 10/18/2020
+ * 11/1/2020
  *
  * Entry Point for main application
  */
